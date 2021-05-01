@@ -3,7 +3,9 @@ package netapp
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"time"
 )
 
 type Volumes struct {
@@ -111,4 +113,241 @@ func GetVolumes() (Volumes,error) {
 	}
 	return volumes,nil
 
+}
+
+type VolumeV2 struct {
+	Links struct {
+		Next struct {
+			Href string `json:"href"`
+		} `json:"next"`
+		Self struct {
+			Href string `json:"href"`
+		} `json:"self"`
+	} `json:"_links"`
+	NumRecords int `json:"num_records"`
+	Records    []struct {
+		Links struct {
+			Self struct {
+				Href string `json:"href"`
+			} `json:"self"`
+		} `json:"_links"`
+		Aggregates []struct {
+			Links struct {
+				Self struct {
+					Href string `json:"href"`
+				} `json:"self"`
+			} `json:"_links"`
+			Key  string `json:"key"`
+			Name string `json:"name"`
+			UUID string `json:"uuid"`
+		} `json:"aggregates"`
+		Autosize struct {
+			Maximum int    `json:"maximum"`
+			Mode    string `json:"mode"`
+		} `json:"autosize"`
+		Cluster struct {
+			Links struct {
+				Self struct {
+					Href string `json:"href"`
+				} `json:"self"`
+			} `json:"_links"`
+			Key  string `json:"key"`
+			Name string `json:"name"`
+			UUID string `json:"uuid"`
+		} `json:"cluster"`
+		CreateTime time.Time `json:"create_time"`
+		Key        string    `json:"key"`
+		Language   string    `json:"language"`
+		Name       string    `json:"name"`
+		Nas        struct {
+			ExportPolicy struct {
+				Links struct {
+					Self struct {
+						Href string `json:"href"`
+					} `json:"self"`
+				} `json:"_links"`
+				ID   int64  `json:"id"`
+				Key  string `json:"key"`
+				Name string `json:"name"`
+			} `json:"export_policy"`
+		} `json:"nas"`
+		Qos struct {
+			Policy struct {
+				Links struct {
+					Self struct {
+						Href string `json:"href"`
+					} `json:"self"`
+				} `json:"_links"`
+				Key               string `json:"key"`
+				MaxThroughputIops int    `json:"max_throughput_iops"`
+				MaxThroughputMbps int    `json:"max_throughput_mbps"`
+				MinThroughputIops int    `json:"min_throughput_iops"`
+				Name              string `json:"name"`
+				UUID              string `json:"uuid"`
+			} `json:"policy"`
+		} `json:"qos"`
+		Snapmirror struct {
+			IsProtected bool `json:"is_protected"`
+		} `json:"snapmirror"`
+		SnapshotPolicy struct {
+			Key  string `json:"key"`
+			Name string `json:"name"`
+			UUID string `json:"uuid"`
+		} `json:"snapshot_policy"`
+		Space struct {
+			Available int `json:"available"`
+			Size      int `json:"size"`
+			Used      int `json:"used"`
+		} `json:"space"`
+		State string `json:"state"`
+		Style string `json:"style"`
+		Svm   struct {
+			Links struct {
+				Self struct {
+					Href string `json:"href"`
+				} `json:"self"`
+			} `json:"_links"`
+			Key  string `json:"key"`
+			Name string `json:"name"`
+			UUID string `json:"uuid"`
+		} `json:"svm"`
+		Tiering struct {
+			Policy string `json:"policy"`
+		} `json:"tiering"`
+		Type string `json:"type"`
+		UUID string `json:"uuid"`
+	} `json:"records"`
+	TotalRecords int `json:"total_records"`
+}
+
+
+func getVolumesV2(query string) (VolumeV2, error) {
+	var results VolumeV2
+	bodyText, err := getResponseBody(query)
+	if err != nil {
+		return VolumeV2{}, err
+	}
+	err = json.Unmarshal(bodyText, &results)
+	if err != nil {
+		log.Printf("verita-core: Error: %v", err)
+		return VolumeV2{}, err
+	}
+	return results, nil
+}
+//Retrieving a list of volumes in the datacenter
+func GetVolumesV2() (VolumeV2, error) {
+	var volumes VolumeV2
+	query := "/api/datacenter/storage/volume"
+	bodyText, err := getResponseBody(query)
+	if err != nil {
+		return VolumeV2{}, err
+	}
+	err = json.Unmarshal(bodyText, &volumes)
+	if err != nil {
+		log.Printf("verita-core: Error: %v", err)
+		return volumes, err
+	}
+	return volumes, nil
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "cluster.name"
+func GetVolumesFromClusterNameV2(cluster string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?cluster.name=" + cluster
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "svm.name"
+func GetVolumesFromSvmNameV2(svm string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?svm.name=" + svm
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "type"
+func GetVolumesFromTypeV2(t string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?type=" + t
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "key"
+func GetVolumesFromKeyV2(key string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?key=" + key
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "state"
+func GetVolumesFromStateV2(state string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?state=" + state
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "style"
+func GetVolumesFromStyleV2(style string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?state=" + style
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "uuid"
+func GetVolumesFromUUIDV2(uuid string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?uuid=" + uuid
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "aggregate.key"
+func GetVolumesFromAggregateKeyV2(key string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?aggregate.key=" + key
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "cluster.key"
+func GetVolumesFromClusterKeyV2(key string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?cluster.key=" + key
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "svm.key"
+func GetVolumesFromSVMKeyV2(key string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?svm.key=" + key
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "aggregate.uuid"
+func GetVolumesFromAggregateUUIDV2(uuid string, environment string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?aggregate.uuid=" + uuid
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "cluster.uuid"
+func GetVolumesFromClusterKeyUUIDV2(uuid string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?cluster.uuid=" + uuid
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "svm.uuid"
+func GetVolumesFromSVMUUIDV2(uuid string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?svm.uuid=" + uuid
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "aggregate.name"
+func GetVolumesFromAggregateNameV2(name string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?aggregate.name=" + name
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "nas.export_policy.key"
+func GetVolumesFromNASKeyV2(key string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?nas.export_policy.key=" + key
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "nas.export_policy.id"
+func GetVolumesFromNASIDV2(id string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?nas.export_policy.id=" + id
+	return getVolumesV2(query)
+}
+
+//Retrieving a list of volumes in the datacenter filtered using "nas.export_policy.name"
+func GetVolumesFromNASNameV2(name string) (VolumeV2, error) {
+	query := "/api/datacenter/storage/volumes?nas.export_policy.name=" + name
+	return getVolumesV2(query)
 }

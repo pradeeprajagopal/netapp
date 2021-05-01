@@ -3,6 +3,7 @@ package netapp
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -61,6 +62,59 @@ type NFS struct {
 	TotalCount int `json:"totalCount"`
 }
 
+type NfsV2 struct {
+	Links struct {
+		Next struct {
+			Href string `json:"href"`
+		} `json:"next"`
+		Self struct {
+			Href string `json:"href"`
+		} `json:"self"`
+	} `json:"_links"`
+	NumRecords int `json:"num_records"`
+	Records    []struct {
+		Links struct {
+			Self struct {
+				Href string `json:"href"`
+			} `json:"self"`
+		} `json:"_links"`
+		Cluster struct {
+			Links struct {
+				Self struct {
+					Href string `json:"href"`
+				} `json:"self"`
+			} `json:"_links"`
+			Key  string `json:"key"`
+			Name string `json:"name"`
+			UUID string `json:"uuid"`
+		} `json:"cluster"`
+		ID    int  `json:"id"`
+		Key   string `json:"key"`
+		Name  string `json:"name"`
+		Rules []struct {
+			AnonymousUser string `json:"anonymous_user"`
+			Clients       []struct {
+				Match string `json:"match"`
+			} `json:"clients"`
+			Index     int      `json:"index"`
+			Protocols []string `json:"protocols"`
+			RoRule    []string `json:"ro_rule"`
+			RwRule    []string `json:"rw_rule"`
+			Superuser []string `json:"superuser"`
+		} `json:"rules"`
+		Svm struct {
+			Links struct {
+				Self struct {
+					Href string `json:"href"`
+				} `json:"self"`
+			} `json:"_links"`
+			Key  string `json:"key"`
+			Name string `json:"name"`
+			UUID string `json:"uuid"`
+		} `json:"svm"`
+	} `json:"records"`
+	TotalRecords int `json:"total_records"`
+}
 
 //GetAllNfsInfo ... retreives all NFS export information
 func GetAllNfsInfo() (NFS, error) {
@@ -88,4 +142,44 @@ func GetAllNfsInfo() (NFS, error) {
 	}
 	return nfs, nil
 
+}
+
+
+func getNfsInfoV2(query string) (NfsV2, error) {
+	var results NfsV2
+	bodyText, err := getResponseBody(query)
+	if err != nil {
+		return NfsV2{}, err
+	}
+	err = json.Unmarshal(bodyText, &results)
+	if err != nil {
+		log.Printf("verita-core: Error: %v", err)
+		return NfsV2{}, err
+	}
+	return results, nil
+}
+
+
+//GetAllNfsInfoV2 get all NFs info
+func GetAllNfsInfoV2() (NfsV2, error) {
+	query := "/api/datacenter/protocols/nfs/export-policies?offset=1000"
+	return getNfsInfoV2(query)
+}
+
+//GetNfsInfoV2FromName get NFSExport from name
+func GetNfsInfoV2FromName(name string) (NfsV2, error) {
+	query := "/api/datacenter/protocols/nfs/export-policies?name="+name
+	return getNfsInfoV2(query)
+}
+
+//GetNfsInfoV2FromCluster get NFS from Cluster
+func GetNfsInfoV2FromCluster(name string) (NfsV2, error) {
+	query := "/api/datacenter/protocols/nfs/export-policies?cluster.name="+name
+	return getNfsInfoV2(query)
+}
+
+//GetNfsInfoV2FromCluster get NFS from Svm
+func GetNfsInfoV2FromSvm(name string) (NfsV2, error) {
+	query := "/api/datacenter/protocols/nfs/export-policies?svm.name="+name
+	return getNfsInfoV2(query)
 }
