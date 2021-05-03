@@ -1,3 +1,3 @@
-module github.com/pradeeprajagopal/netapp/v1
+module github.com/pradeeprajagopal/netapp
 
 go 1.16
