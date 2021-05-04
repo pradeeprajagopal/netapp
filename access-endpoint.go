@@ -69,4 +69,3 @@ func GetAccessEndPointsV2(key string) (AccessEndPoints, error) {
 	return clusters, nil
 
 }
-

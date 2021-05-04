@@ -11,7 +11,10 @@ func TestGetInterfaces(t *testing.T) {
 		want    Interfaces
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name:    "success",
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -20,7 +23,7 @@ func TestGetInterfaces(t *testing.T) {
 				t.Errorf("GetInterfaces() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetInterfaces() got = %v, want %v", got, tt.want)
 			}
 		})

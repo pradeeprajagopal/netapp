@@ -86,32 +86,30 @@ type Volumes struct {
 	TotalCount int `json:"totalCount"`
 }
 
-
 //GetVolumes ...
-//ToDo: Enable Pagination
-func GetVolumes() (Volumes,error) {
+func GetVolumes() (Volumes, error) {
 	var volumes Volumes
-	client := Auth(server,user,password)
+	client := Auth(server, user, password)
 	newurl := client.URL + "volumes?max_records=1000"
 	req, err := http.NewRequest(method, newurl, nil)
 	if err != nil {
-		return volumes,err
+		return volumes, err
 	}
 	req.SetBasicAuth(client.UserName, client.Password)
 	req.Header.Set("Accept", "application/vnd.netapp.object.inventory.performance.hal+json")
 	resp, err := client.Client.Do(req)
 	if err != nil {
-		return volumes,err
+		return volumes, err
 	}
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return volumes,err
+		return volumes, err
 	}
 	err = json.Unmarshal(bodyText, &volumes)
 	if err != nil {
-		return volumes,err
+		return volumes, err
 	}
-	return volumes,nil
+	return volumes, nil
 
 }
 
@@ -220,7 +218,6 @@ type VolumeV2 struct {
 	TotalRecords int `json:"total_records"`
 }
 
-
 func getVolumesV2(query string) (VolumeV2, error) {
 	var results VolumeV2
 	bodyText, err := getResponseBody(query)
@@ -234,6 +231,7 @@ func getVolumesV2(query string) (VolumeV2, error) {
 	}
 	return results, nil
 }
+
 //Retrieving a list of volumes in the datacenter
 func GetVolumesV2() (VolumeV2, error) {
 	var volumes VolumeV2

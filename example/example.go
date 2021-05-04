@@ -1,18 +1,4 @@
-# netapp-ocum
-
-Pakcage performs all read opertion to the Netapp Active IQ Ocum V9.8.
-
-All Major function has option to connect to older version of the ocum and newer version of the ocum. (Function with V2 prefix)
-
-How to import
-
-```go
-import "github.com/pradeeprajagopal/netapp"
-```
-
-Example
-
-```go
+package main
 
 import (
 	"fmt"
@@ -39,5 +25,3 @@ func main() {
 	}
 	fmt.Println(clusters)
 }
-
-```

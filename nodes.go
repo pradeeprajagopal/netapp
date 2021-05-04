@@ -112,13 +112,14 @@ type NodeV2 struct {
 		} `json:"self"`
 	} `json:"_links"`
 }
+
 //GetAllNodes ...
 //Get the performance information for all the nodes.
 //
 //This API can be used to query about node's health and performance data based on the mime type requested by the client.
 func GetAllNodes() (Nodes, error) {
 	var nodes Nodes
-	client := Auth(server,user,password)
+	client := Auth(server, user, password)
 	newUrl := client.URL + "nodes?max_records=15000"
 	//logger.Log(newUrl)
 	req, err := http.NewRequest(method, newUrl, nil)
@@ -144,7 +145,8 @@ func GetAllNodes() (Nodes, error) {
 
 }
 
-
+//getNodeInfoV2 ...
+//Function performs all the http query and Unmarshall the data into Node struct
 func getNodeInfoV2(query string) (NodeV2, error) {
 	var results NodeV2
 	bodyText, err := getResponseBody(query)
@@ -159,35 +161,47 @@ func getNodeInfoV2(query string) (NodeV2, error) {
 	return results, nil
 }
 
+//GetNodesV2 ...
+//Retrieves all nodes. This can be paginated if the number of nodes are more
 func GetNodesV2() (NodeV2, error) {
 	query := "/api/datacenter/cluster/nodes"
 	return getNodeInfoV2(query)
 }
 
+//GetNodesFromNameV2 ...
+//Retrieves Node from OCUM based on the Name
 func GetNodesFromNameV2(name string) (NodeV2, error) {
 	query := "api/datacenter/cluster/nodes?name=" + name
 	return getNodeInfoV2(query)
 
 }
 
+//GetNodesFromUUIDV2 ...
+//Retrieves Node from OCUM based on the UUID property of the node
 func GetNodesFromUUIDV2(uuid string) (NodeV2, error) {
 	query := "api/datacenter/cluster/nodes?name=" + uuid
 	return getNodeInfoV2(query)
 
 }
 
+//GetNodesFromClusterV2 ...
+//Retrieves Node from OCUM based on the cluster.name property
 func GetNodesFromClusterV2(cluster string) (NodeV2, error) {
 	query := "api/datacenter/cluster/nodes?cluster.name=" + cluster
 	return getNodeInfoV2(query)
 
 }
 
+//GetNodesFromKeyV2 ...
+//Retrieves Node from OCUM based on the Key of the node
 func GetNodesFromKeyV2(key string) (NodeV2, error) {
 	query := "/api/datacenter/cluster/nodes/" + key
 	return getNodeInfoV2(query)
 
 }
 
+//GetNodeBySerialNumber ...
+//Retrieves Node from OCUM based on Serial number.
 func GetNodeBySerialNumber(serial_number string) (NodeV2, error) {
 	query := "/api/datacenter/cluster/nodes?serial_number=" + serial_number
 	return getNodeInfoV2(query)

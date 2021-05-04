@@ -102,33 +102,35 @@ type ClusterNode struct {
 	Uptime       int    `json:"uptime"`
 	serialNumber string `json:"serial_number"`
 }
+
 //GetClusters connects to ocum and gets all the cluster information
-func GetClusters() (Clusters,error) {
+func GetClusters() (Clusters, error) {
 	var clusters Clusters
-	client := Auth(server,user,password)
+	client := Auth(server, user, password)
 	newurl := client.URL + "clusters?max_records=1000"
 	req, err := http.NewRequest(method, newurl, nil)
 	if err != nil {
-		return clusters,err
+		return clusters, err
 	}
 	req.SetBasicAuth(client.UserName, client.Password)
 	req.Header.Set("Accept", "application/vnd.netapp.object.inventory.performance.hal+json")
 	resp, err := client.Client.Do(req)
 	if err != nil {
-		return clusters,err
+		return clusters, err
 	}
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return clusters,err
+		return clusters, err
 	}
 	err = json.Unmarshal(bodyText, &clusters)
 	if err != nil {
-		return clusters,err
+		return clusters, err
 	}
-	return clusters,nil
+	return clusters, nil
 
 }
 
+//getClusterInfoV2 function that performs http call to the ocum and unmarhsall the data to struct
 func getClusterInfoV2(query string) (ClusterV2, error) {
 	var results ClusterV2
 	bodyText, err := getResponseBody(query)
@@ -144,48 +146,56 @@ func getClusterInfoV2(query string) (ClusterV2, error) {
 	return results, nil
 }
 
-
+//GetClustersV2 retrieves all cluster information
 func GetClustersV2() (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters"
 	return getClusterInfoV2(query)
 
 }
 
-func GetClusterV2(name string) (ClusterV2, error) {
+//GetClusterV2FromName retrieves cluster with name property
+func GetClusterV2FromName(name string) (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters?name=" + strings.ToLower(name)
 	return getClusterInfoV2(query)
 }
 
+//GetClusterFromKeyV2 retrieves cluster with key property
 func GetClusterFromKeyV2(name string) (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters?key=" + strings.ToLower(name)
 	return getClusterInfoV2(query)
 }
 
+//GetClusterFromUUIDV2 retrieves cluster from UUID property
 func GetClusterFromUUIDV2(uuid string) (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters?key=" + uuid
 	return getClusterInfoV2(query)
 }
 
+//GetClusterFromLocationV2 retrieves cluster based on the location
 func GetClusterFromLocationV2(location string) (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters?location=" + location
 	return getClusterInfoV2(query)
 }
 
+//GetClusterFromContactV2 retrieves cluster with contact information
 func GetClusterFromContactV2(contact string) (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters?contact=" + contact
 	return getClusterInfoV2(query)
 }
 
+//GetClusterFromManagementIPV2 retrieves cluster from management ip
 func GetClusterFromManagementIPV2(management_ip string) (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters?management_ip=" + management_ip
 	return getClusterInfoV2(query)
 }
 
+//GetClusterFromMajorVersionV2 retrieves cluster with from version.major property
 func GetClusterFromMajorVersionV2(version int) (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters?version.major=" + strconv.Itoa(version)
 	return getClusterInfoV2(query)
 }
 
+//GetClusterFromMinorVersionV2 retrieves cluster from version.minor proeprty
 func GetClusterFromMinorVersionV2(version int) (ClusterV2, error) {
 	query := "/api/datacenter/cluster/clusters?version.minor=" + strconv.Itoa(version)
 	return getClusterInfoV2(query)

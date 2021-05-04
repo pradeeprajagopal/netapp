@@ -5,27 +5,28 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 var (
 	basePath = "/api/ontap/"
 	method   = "GET"
-	server string
-	user string
-	password string
+	user     = os.Getenv("USER")
+	password = os.Getenv("PASSWORD")
+	server   = os.Getenv("SERVER")
 )
 
 type NewClient struct {
-	UserName   string
-	Password   string
-	Host       string
-	VerifySSL  bool
-	SSL        bool
-	TimeOut    time.Duration
-	URL        string
-	Debug      bool
-	Client     *http.Client
+	UserName  string
+	Password  string
+	Host      string
+	VerifySSL bool
+	SSL       bool
+	TimeOut   time.Duration
+	URL       string
+	Debug     bool
+	Client    *http.Client
 }
 
 // Instantiate new client
@@ -36,15 +37,15 @@ func client(host, username, password string, ssl bool, timeout time.Duration) *N
 	}
 	client := &http.Client{Transport: tr}
 	return &NewClient{
-		UserName:   username,
-		Password:   password,
-		Host:       host,
-		VerifySSL:  ssl,
-		SSL:        true,
-		TimeOut:    timeout,
-		URL:        url,
-		Debug:      false,
-		Client:     client,
+		UserName:  username,
+		Password:  password,
+		Host:      host,
+		VerifySSL: ssl,
+		SSL:       true,
+		TimeOut:   timeout,
+		URL:       url,
+		Debug:     false,
+		Client:    client,
 	}
 }
 
@@ -62,25 +63,25 @@ func clientV2(host, username, password string, ssl bool, timeout time.Duration) 
 	}
 	client := &http.Client{Transport: tr}
 	return &NewClient{
-		UserName:   username,
-		Password:   password,
-		Host:       host,
-		VerifySSL:  ssl,
-		SSL:        true,
-		TimeOut:    timeout,
-		URL:        url,
-		Debug:      false,
-		Client:     client,
+		UserName:  username,
+		Password:  password,
+		Host:      host,
+		VerifySSL: ssl,
+		SSL:       true,
+		TimeOut:   timeout,
+		URL:       url,
+		Debug:     false,
+		Client:    client,
 	}
 }
 
-func AuthV2(server,user,password string) *NewClient {
+func AuthV2(server, user, password string) *NewClient {
 	client := clientV2(server, user, password, true, 60*time.Second)
 	return client
 }
 
 func getResponseBody(query string) ([]byte, error) {
-	client := AuthV2(server,user,password)
+	client := AuthV2(server, user, password)
 	newurl := client.URL + query
 	req, err := http.NewRequest(method, newurl, nil)
 	if err != nil {
