@@ -1,6 +1,6 @@
-# netapp-ocum
+# netapp-ocum [![Go Reference](https://pkg.go.dev/badge/github.com/pradeeprajagopal/netapp.svg)](https://pkg.go.dev/github.com/pradeeprajagopal/netapp)
 
-Pakcage performs all read opertion to the Netapp Active IQ Ocum V9.8.
+Pakcage performs all read opertion to the Netapp Active IQ Ocum V9.8. 
 
 All Major function has option to connect to older version of the ocum and newer version of the ocum. (Function with V2 prefix)
 
